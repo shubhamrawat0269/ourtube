@@ -1,9 +1,12 @@
-import express from "express";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
+import express from "express";
+import jwt from "jsonwebtoken";
+
 import mongoose from "mongoose";
 import User from "../models/user.model.js";
 import { v2 as cloudinary } from "cloudinary";
+
 const router = express.Router();
 dotenv.config();
 
@@ -52,16 +55,67 @@ router.post("/signup", async (req, res) => {
   }
 });
 
-router.post("/login", async (req, res) => {
-  const { password } = req.body;
+router.post("/signin", async (req, res) => {
+  try {
+    const { email, password } = req.body;
 
-  const isMatchPwd = await bcrypt.compare(password, storedHash);
-  if (!isMatchPwd)
-    return res
-      .status(401)
-      .json({ status: false, message: "Invalid Credentials" });
+    // 1. Validate input
+    if (!email || !password) {
+      return res.status(400).json({
+        status: false,
+        message: "Email and password are required",
+      });
+    }
 
-  res.json({ status: true, message: "Login successful" });
+    // 2. Check if user exists
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(401).json({
+        status: false,
+        message: "Invalid Credentials",
+      });
+    }
+
+    // 3. Compare password
+    const isMatchPwd = await bcrypt.compare(password, user.password);
+    if (!isMatchPwd) {
+      return res.status(401).json({
+        status: false,
+        message: "Invalid Credentials",
+      });
+    }
+
+    // 4. Generate JWT token 
+    const token = jwt.sign(
+      { userId: user._id, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" },
+    );
+
+    // 5. Send response
+    res.status(200).json({
+      status: true,
+      message: "Login successful",
+      token,
+      data: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        channelName: user.channelName,
+        logoId: user.logoId,
+        logoUrl: user.logoUrl,
+        subscribedChannels: user.subscribedChannels,
+        subscribers: user.subscribers,
+      },
+    });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({
+      status: false,
+      message: "Server Error",
+    });
+  }
 });
 
 export default router;
