@@ -85,11 +85,17 @@ router.post("/signin", async (req, res) => {
       });
     }
 
-    // 4. Generate JWT token 
+    // 4. Generate JWT token
     const token = jwt.sign(
-      { userId: user._id, email: user.email },
+      {
+        userId: user._id,
+        email: user.email,
+        channelName: user.channelName,
+        phone: user.phone,
+        logoId: user.logoId,
+      },
       process.env.JWT_SECRET,
-      { expiresIn: "7d" },
+      { expiresIn: "365d" },
     );
 
     // 5. Send response
