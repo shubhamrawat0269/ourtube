@@ -17,11 +17,8 @@ cloudinary.config({
 
 router.post("/upload-video", authMiddleware, async (req, res) => {
   try {
-    /* 1. After verify token */
-    const token = req.headers.authorization.split(" ")[1];
-    const user = await jwt.verify(token, process.env.JWT_SECRET);
-
-    /* 2.  Uploading Video and thumbnail to cloudinary */
+    const user = req.user;
+    /* 1.  Uploading Video and thumbnail to cloudinary */
     const uploadedVideo = await cloudinary.uploader.upload(
       req.files.video.tempFilePath,
       {
@@ -34,7 +31,7 @@ router.post("/upload-video", authMiddleware, async (req, res) => {
 
     // console.log({ uploadedVideo, uploadedThumbnail });
 
-    /* 3. Saving uploaded clourdinary image & video info to db */
+    /* 2. Saving uploaded clourdinary image & video info to db */
     const newUploadedVideo = new Video({
       _id: new mongoose.Types.ObjectId(),
       title: req.body.title,
@@ -57,6 +54,77 @@ router.post("/upload-video", authMiddleware, async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ status: false, message: "Server Error" });
+  }
+});
+
+router.put("/update-video/:id", authMiddleware, async (req, res) => {
+  try {
+    const videoId = req.params.id;
+
+    /* 1. Get logged-in user (already decoded in middleware)*/
+    const user = req.user;
+
+    /* 2. Find video */
+    const video = await Video.findById(videoId);
+    if (!video) {
+      return res.status(404).json({
+        status: false,
+        message: "Video not found",
+      });
+    }
+
+    /* 3. Authorization check (only owner can update) */
+    if (video.userId.toString() !== user.userId) {
+      return res.status(403).json({
+        status: false,
+        message: "Unauthorized to update this video",
+      });
+    }
+
+    /* 4. Prepare update object */
+    const updateFields = {};
+
+    if (req.body.title) updateFields.title = req.body.title;
+    if (req.body.description) updateFields.description = req.body.description;
+    if (req.body.category) updateFields.category = req.body.category;
+    if (req.body.tags) {
+      updateFields.tags = req.body.tags.split(",");
+    }
+
+    /* 5. Handle thumbnail update */
+    if (req.files && req.files.thumbnail) {
+      // Delete old thumbnail from Cloudinary environment
+      if (video.thumbnailId) {
+        await cloudinary.uploader.destroy(video.thumbnailId);
+      }
+
+      // Upload new thumbnail
+      const uploadedThumbnail = await cloudinary.uploader.upload(
+        req.files.thumbnail.tempFilePath,
+      );
+
+      updateFields.thumbnailUrl = uploadedThumbnail.secure_url;
+      updateFields.thumbnailId = uploadedThumbnail.public_id;
+    }
+
+    /* 6. Update video on DB */
+    const updatedVideo = await Video.findOneAndUpdate(
+      { _id: videoId },
+      { $set: updateFields },
+      { returnDocument: "after", runValidators: true },
+    );
+
+    res.status(200).json({
+      status: true,
+      message: "Video updated successfully",
+      data: updatedVideo,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      status: false,
+      message: "Server Error",
+    });
   }
 });
 
