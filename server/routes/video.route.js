@@ -128,4 +128,55 @@ router.put("/update-video/:id", authMiddleware, async (req, res) => {
   }
 });
 
+router.delete("/delete-video/:id", authMiddleware, async (req, res) => {
+  try {
+    const videoId = req.params.id;
+    /* 1. Get logged-in user */
+    const user = req.user;
+
+    /* 2. Find video */
+    const video = await Video.findById(videoId);
+    if (!video) {
+      return res.status(404).json({
+        status: false,
+        message: "Video not found",
+      });
+    }
+
+    /* 3. Authorization check (only owner can delete) */
+    if (video.userId.toString() !== user.userId) {
+      return res.status(403).json({
+        status: false,
+        message: "Unauthorized to delete this video",
+      });
+    }
+
+    /* 4. Delete video from Cloudinary */
+    if (video.videoId) {
+      await cloudinary.uploader.destroy(video.videoId, {
+        resource_type: "video",
+      });
+    }
+
+    /* 5. Delete thumbnail from Cloudinary */
+    if (video.thumbnailId) {
+      await cloudinary.uploader.destroy(video.thumbnailId);
+    }
+
+    /* 6. Delete from DB (modern way) */
+    await Video.deleteOne({ _id: videoId });
+
+    res.status(200).json({
+      status: true,
+      message: "Video deleted successfully",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      status: false,
+      message: "Server Error",
+    });
+  }
+});
+
 export default router;
