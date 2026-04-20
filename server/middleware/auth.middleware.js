@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken'
 
 const authMiddleware = (req, res, next) => {
   try {
-    // 1. Get token from header
+    /*  1. Get token from header */
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -20,7 +20,6 @@ const authMiddleware = (req, res, next) => {
 
     // 3. Attach user data to request
     req.user = decoded;
-
     next();
   } catch (error) {
     return res.status(401).json({
