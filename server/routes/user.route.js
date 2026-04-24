@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 import User from "../models/user.model.js";
 import { v2 as cloudinary } from "cloudinary";
+import authMiddleware from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 dotenv.config();
@@ -114,6 +115,99 @@ router.post("/signin", async (req, res) => {
         subscribedChannels: user.subscribedChannels,
         subscribers: user.subscribers,
       },
+    });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({
+      status: false,
+      message: "Server Error",
+    });
+  }
+});
+
+router.put("/subscribe/:channelId", authMiddleware, async (req, res) => {
+  try {
+    const loggedInUserId = req.user.userId;
+    const toBeSubscribedChannelId = req.params.channelId;
+
+    const channelToBeSubscribeDetails = await User.findById(
+      toBeSubscribedChannelId,
+    );
+    // console.log({ loggedInUserId, toBeSubscribedChannelId });
+    // console.log({ channelToBeSubscribeDetails });
+
+    const alreadySubscribedChannel =
+      channelToBeSubscribeDetails.subscribedBy.includes(loggedInUserId);
+
+    if (alreadySubscribedChannel) {
+      return res.status(500).json({
+        status: false,
+        message: "already subscribed to this channel",
+      });
+    }
+
+    channelToBeSubscribeDetails.subscribers += 1;
+    channelToBeSubscribeDetails.subscribedBy.push(loggedInUserId);
+    await channelToBeSubscribeDetails.save();
+
+    const loggedInUserDetails = await User.findById(loggedInUserId);
+    loggedInUserDetails.subscribedChannels.push(
+      channelToBeSubscribeDetails._id,
+    );
+    await loggedInUserDetails.save();
+
+    return res.status(200).json({
+      status: true,
+      message: "User subscribe to this channel",
+    });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({
+      status: false,
+      message: "Server Error",
+    });
+  }
+});
+
+router.put("/unsubscribe/:channelId", authMiddleware, async (req, res) => {
+  try {
+    const loggedInUserId = req.user.userId;
+    const toBeUnSubscribedChannelId = req.params.channelId;
+
+    let channelToBeUnSubscribeDetails = await User.findById(
+      toBeUnSubscribedChannelId,
+    );
+    // console.log({ loggedInUserId, toBeSubscribedChannelId });
+    // console.log({ channelToBeSubscribeDetails });
+
+    const alreadySubscribedChannel =
+      channelToBeUnSubscribeDetails.subscribedBy.includes(loggedInUserId);
+
+    if (!alreadySubscribedChannel) {
+      return res.status(500).json({
+        status: false,
+        message: "channel isn't subscribed by logged in user",
+      });
+    }
+
+    channelToBeUnSubscribeDetails.subscribers -= 1;
+    channelToBeUnSubscribeDetails.subscribedBy =
+      channelToBeUnSubscribeDetails.subscribedBy.filter(
+        (userId) => userId.toString() !== loggedInUserId,
+      );
+    await channelToBeUnSubscribeDetails.save();
+
+    let loggedInUserDetails = await User.findById(loggedInUserId);
+    loggedInUserDetails.subscribedChannels =
+      loggedInUserDetails.subscribedChannels.filter(
+        (userId) => userId.toString() !== channelToBeUnSubscribeDetails._id.toString(),
+      );
+
+    await loggedInUserDetails.save();
+
+    return res.status(200).json({
+      status: true,
+      message: "User unsubscribed to this channel",
     });
   } catch (error) {
     console.error(error.message);
