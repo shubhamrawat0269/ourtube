@@ -4,6 +4,7 @@ const app = express();
 
 import userRoutes from "./routes/user.route.js";
 import videoRoutes from "./routes/video.route.js";
+import commentRoutes from "./routes/comment.route.js";
 
 // Middleware
 app.use(
@@ -17,5 +18,6 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/users", userRoutes);
 app.use("/api/videos", videoRoutes);
+app.use("/api/comments", commentRoutes);
 
 export default app;
