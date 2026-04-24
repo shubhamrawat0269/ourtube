@@ -203,7 +203,9 @@ router.put("/like-video/:id", authMiddleware, async (req, res) => {
 
     if (alreadyDisliked) {
       video.dislikes -= 1;
-      video.dislikedBy = video.dislikedBy.filter(id => id.toString() !== userId);
+      video.dislikedBy = video.dislikedBy.filter(
+        (id) => id.toString() !== userId,
+      );
     }
 
     video.likes += 1;
@@ -260,6 +262,36 @@ router.put("/dislike-video/:id", authMiddleware, async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ status: false, message: "Server Error" });
+  }
+});
+
+router.put("/views/:id", async (req, res) => {
+  try {
+    const videoId = req.params.id;
+
+    /* 1. Find video */
+    const video = await Video.findById(videoId);
+    if (!video) {
+      return res.status(404).json({
+        status: false,
+        message: "Video not found",
+      });
+    }
+
+    // console.log(video);
+    video.views += 1;
+    await video.save();
+
+    return res.status(200).json({
+      status: true,
+      message: "View Count Increases",
+    });
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({
+      status: false,
+      message: "Server Error",
+    });
   }
 });
 
