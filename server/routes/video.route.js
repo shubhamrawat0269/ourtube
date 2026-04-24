@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import express from "express";
-import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
+import mongoose from "mongoose";
 import Video from "../models/video.model.js";
 import { v2 as cloudinary } from "cloudinary";
 import authMiddleware from "../middleware/auth.middleware.js";
@@ -176,6 +176,90 @@ router.delete("/delete-video/:id", authMiddleware, async (req, res) => {
       status: false,
       message: "Server Error",
     });
+  }
+});
+
+router.put("/like-video/:id", authMiddleware, async (req, res) => {
+  try {
+    const videoId = req.params.id;
+    const userId = req.user.userId;
+
+    const video = await Video.findById(videoId);
+
+    if (!video) {
+      return res.status(404).json({
+        status: false,
+        message: "Video not found",
+      });
+    }
+
+    const alreadyLiked = video.likedBy.includes(userId);
+    const alreadyDisliked = video.dislikedBy.includes(userId);
+
+    if (alreadyLiked) {
+      // already liked no need to proceed
+      return res.status(500).json({ status: false, message: "Already Liked" });
+    }
+
+    if (alreadyDisliked) {
+      video.dislikes -= 1;
+      video.dislikedBy = video.dislikedBy.filter(id => id.toString() !== userId);
+    }
+
+    video.likes += 1;
+    video.likedBy.push(userId);
+    await video.save();
+
+    return res.status(200).json({
+      status: true,
+      message: "Video liked",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ status: false, message: "Server Error" });
+  }
+});
+
+router.put("/dislike-video/:id", authMiddleware, async (req, res) => {
+  try {
+    const videoId = req.params.id;
+    const userId = req.user.userId;
+
+    const video = await Video.findById(videoId);
+
+    if (!video) {
+      return res.status(404).json({
+        status: false,
+        message: "Video not found",
+      });
+    }
+
+    const alreadyLiked = video.likedBy.includes(userId);
+    const alreadyDisliked = video.dislikedBy.includes(userId);
+
+    if (alreadyDisliked) {
+      // already liked no need to proceed
+      return res
+        .status(500)
+        .json({ status: false, message: "Already disliked" });
+    }
+
+    if (alreadyLiked) {
+      video.likes -= 1;
+      video.likedBy = video.likedBy.filter((id) => id.toString() !== userId);
+    }
+
+    video.dislikes += 1;
+    video.dislikedBy.push(userId);
+    await video.save();
+
+    return res.status(200).json({
+      status: true,
+      message: "Video disliked",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ status: false, message: "Server Error" });
   }
 });
 
