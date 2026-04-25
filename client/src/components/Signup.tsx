@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useNavigate } from "react-router-dom";
-const API = import.meta.env.VITE_API_BASE_URL;
+const API = 'http://localhost:8082';
 
 // Zod Schema
 const signupSchema = z.object({
