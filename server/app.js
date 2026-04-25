@@ -19,7 +19,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://your-frontend.vercel.app"],
+    origin: [process.env.FRONTEND_LOCAL_URL, process.env.FRONTEND_PROD_URL],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   }),
