@@ -32,7 +32,7 @@ export default function Signup() {
     resolver: zodResolver(signupSchema),
   });
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: any) => {
     try {
       setLoading(true);
 
@@ -129,9 +129,9 @@ export default function Signup() {
             <div className="space-y-1">
               <Label>Channel Logo</Label>
               <Input type="file" accept="image/*" {...register("logo")} />
-              {errors.logo && (
+              {/* {errors.logo && (
                 <p className="text-sm text-red-500">{errors.logo.message}</p>
-              )}
+              )} */}
             </div>
 
             {/* Submit */}
