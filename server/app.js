@@ -10,11 +10,6 @@ import userRoutes from "./routes/user.route.js";
 import videoRoutes from "./routes/video.route.js";
 import commentRoutes from "./routes/comment.route.js";
 
-const allowedOrigins = [
-  process.env.FRONTEND_LOCAL_URL,
-  process.env.FRONTEND_PROD_URL,
-].filter(Boolean);
-
 // Middleware
 app.use(
   fileUpload({
@@ -23,16 +18,16 @@ app.use(
   }),
 );
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
 app.use(
   cors({
-    origin: allowedOrigins.length ? allowedOrigins : true,
+    origin: process.env.FRONTEND_PROD_URL,
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   }),
 );
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/users", userRoutes);
 app.use("/api/videos", videoRoutes);
