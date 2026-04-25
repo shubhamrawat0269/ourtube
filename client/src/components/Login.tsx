@@ -28,7 +28,7 @@ export default function Login() {
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: any) => {
     try {
       setLoading(true);
 
@@ -38,7 +38,7 @@ export default function Login() {
       localStorage.setItem("token", res.data.token);
 
       alert("Login successful");
-    } catch (error) {
+    } catch (error: any) {
       alert(error?.response?.data?.message || "Login failed");
     } finally {
       setLoading(false);
