@@ -1,5 +1,79 @@
-const Login = () => {
-  return <div>Login</div>;
-};
+import { useState } from "react";
+import axios from "axios";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 
-export default Login;
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+
+
+const loginSchema = z.object({
+  email: z.string().email("Invalid email"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
+
+// ===================== LOGIN ===================== //
+
+export default function Login() {
+  const [loading, setLoading] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(loginSchema),
+  });
+
+  const onSubmit = async (data) => {
+    try {
+      setLoading(true);
+
+      const res = await axios.post("http://localhost:5000/api/login", data);
+
+      // Store token (important)
+      localStorage.setItem("token", res.data.token);
+
+      alert("Login successful");
+    } catch (error) {
+      alert(error?.response?.data?.message || "Login failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-muted">
+      <Card className="w-full max-w-md shadow-xl rounded-2xl">
+        <CardHeader>
+          <CardTitle className="text-center text-2xl font-bold">
+            Welcome Back
+          </CardTitle>
+        </CardHeader>
+
+        <CardContent>
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            <div className="space-y-1">
+              <Label>Email</Label>
+              <Input type="email" {...register("email")} />
+              <p className="text-red-500 text-sm">{errors.email?.message}</p>
+            </div>
+
+            <div className="space-y-1">
+              <Label>Password</Label>
+              <Input type="password" {...register("password")} />
+              <p className="text-red-500 text-sm">{errors.password?.message}</p>
+            </div>
+
+            <Button className="w-full" disabled={loading}>
+              {loading ? "Logging in..." : "Login"}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
