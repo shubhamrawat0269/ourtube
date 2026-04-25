@@ -1,10 +1,19 @@
 import express from "express";
+import dotenv from "dotenv";
+import cors from "cors";
 import fileUpload from "express-fileupload";
 const app = express();
+
+dotenv.config();
 
 import userRoutes from "./routes/user.route.js";
 import videoRoutes from "./routes/video.route.js";
 import commentRoutes from "./routes/comment.route.js";
+
+const allowedOrigins = [
+  process.env.FRONTEND_LOCAL_URL,
+  process.env.FRONTEND_PROD_URL,
+].filter(Boolean);
 
 // Middleware
 app.use(
@@ -19,7 +28,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(
   cors({
-    origin: [process.env.FRONTEND_LOCAL_URL, process.env.FRONTEND_PROD_URL],
+    origin: allowedOrigins.length ? allowedOrigins : true,
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   }),
