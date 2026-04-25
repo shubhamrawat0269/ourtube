@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Label } from "@/components/ui/label";
 const API = "http://localhost:8082";
 
@@ -15,8 +15,6 @@ const loginSchema = z.object({
   email: z.string().email("Invalid email"),
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
-
-// ===================== LOGIN ===================== //
 
 export default function Login() {
   const navigate = useNavigate();
@@ -31,14 +29,14 @@ export default function Login() {
   });
 
   const onSubmit = async (data: any) => {
-    console.log("into login")
     try {
       setLoading(true);
 
       const res = await axios.post(`${API}/api/users/signin`, data);
-      localStorage.setItem("token", res.data.token);
-
       if (!res.status) alert(res.data.message);
+
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("userId", res.data.data.id);
       navigate("/");
     } catch (error: any) {
       alert(error?.response?.data?.message || "Login failed");
@@ -73,6 +71,12 @@ export default function Login() {
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Logging in..." : "Login"}
             </Button>
+
+            <div className="text-center">
+              <Link to={`/signup`} className="pr-2 text-sm text-blue-500">
+                Create Your Account
+              </Link>
+            </div>
           </form>
         </CardContent>
       </Card>
