@@ -1,4 +1,6 @@
-import { Home, Flame, Video, History } from "lucide-react";
+import { Home, Flame, Video, LogOut } from "lucide-react";
+import { NavLink } from "react-router-dom";
+import { Button } from "../ui/button";
 
 function Sidebar({ isOpen }) {
   return (
@@ -7,20 +9,45 @@ function Sidebar({ isOpen }) {
         isOpen ? "w-60" : "w-16"
       }`}
     >
-      <SidebarItem icon={<Home />} label="Home" isOpen={isOpen} />
-      <SidebarItem icon={<Flame />} label="Trending" isOpen={isOpen} />
-      <SidebarItem icon={<Video />} label="Subscriptions" isOpen={isOpen} />
-      <SidebarItem icon={<History />} label="History" isOpen={isOpen} />
+      <SidebarItem
+        icon={<Home size={20} />}
+        label="Home"
+        link={"/"}
+        isOpen={isOpen}
+      />
+      <SidebarItem
+        icon={<Flame size={20} />}
+        label="My Videos"
+        link={"/my-videos"}
+        isOpen={isOpen}
+      />
+      <SidebarItem
+        icon={<Video size={20} />}
+        label="Upload Video"
+        link={"/upload-video"}
+        isOpen={isOpen}
+      />
+      <Button className="bg-transparent text-black text-sm py-5">
+        <LogOut />
+        Logout
+      </Button>
     </aside>
   );
 }
 
-function SidebarItem({ icon, label, isOpen }) {
+function SidebarItem({ icon, label, isOpen, link }) {
   return (
-    <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted cursor-pointer">
-      <div className="h-5 w-5">{icon}</div>
-      {isOpen && <span className="text-sm">{label}</span>}
-    </div>
+    <NavLink
+      to={link}
+      className={({ isActive }) =>
+        isActive ? "text-gray-800 font-bold" : "text-gray-500"
+      }
+    >
+      <div className="flex items-center gap-2 p-2 rounded-lg hover:bg-muted cursor-pointer">
+        <div className="">{icon}</div>
+        {isOpen && <span className="text-sm">{label}</span>}
+      </div>
+    </NavLink>
   );
 }
 
