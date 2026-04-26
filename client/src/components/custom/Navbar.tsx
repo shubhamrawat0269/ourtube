@@ -3,10 +3,12 @@ import { Menu, Search, Bell, User } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function Navbar({ toggleSidebar }) {
   const token = localStorage.getItem("token");
+  const userDetailToken = localStorage.getItem("userDetails");
+  const userDetails = JSON.parse(userDetailToken);
 
   return (
     <nav className="w-full border-b bg-background px-4 py-2 flex items-center justify-between">
@@ -45,6 +47,7 @@ export default function Navbar({ toggleSidebar }) {
         )}
 
         <Avatar>
+          <AvatarImage src={userDetails.logoUrl} alt={userDetails.logoId} />
           <AvatarFallback>
             <User className="h-4 w-4" />
           </AvatarFallback>
