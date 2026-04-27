@@ -42,38 +42,35 @@ export default function Video() {
         },
       });
 
-      toast.success({ title: "Deleted", description: "Video deleted" });
+      toast.success("Video deleted");
       fetchVideos();
     } catch (error) {
-      toast.error({
-        title: "Error",
-        description: error.response?.data?.message || "Delete failed",
-        variant: "destructive",
-      });
+      toast.error(error.response?.data?.message || "Delete failed");
     }
   };
 
   // ================= EDIT VIDEO ================= //
   const handleEdit = async (video) => {
-    const newTitle = prompt("Enter new title", video.title);
-    if (!newTitle) return;
+    alert("Edit feature yet to be implemented");
+    // const newTitle = prompt("Enter new title", video.title);
+    // if (!newTitle) return;
 
-    try {
-      await axios.put(
-        `${API}/api/videos/update-video/${video._id}`,
-        { title: newTitle },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
+    // try {
+    //   await axios.put(
+    //     `${API}/api/videos/update-video/${video._id}`,
+    //     { title: newTitle },
+    //     {
+    //       headers: {
+    //         Authorization: `Bearer ${token}`,
+    //       },
+    //     },
+    //   );
 
-      toast.success("Video updated");
-      fetchVideos();
-    } catch (error) {
-      toast.error("Update failed");
-    }
+    //   toast.success("Video updated");
+    //   fetchVideos();
+    // } catch (error) {
+    //   toast.error("Update failed");
+    // }
   };
 
   return (
