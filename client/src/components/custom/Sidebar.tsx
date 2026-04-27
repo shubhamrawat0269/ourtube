@@ -1,6 +1,5 @@
-import { Home, Flame, Video, LogOut } from "lucide-react";
+import { Home, Flame, Video } from "lucide-react";
 import { NavLink } from "react-router-dom";
-import { Button } from "../ui/button";
 
 function Sidebar({ isOpen }) {
   return (
@@ -27,10 +26,6 @@ function Sidebar({ isOpen }) {
         link={"/upload-video"}
         isOpen={isOpen}
       />
-      <Button className="bg-transparent text-black text-sm py-5">
-        <LogOut />
-        Logout
-      </Button>
     </aside>
   );
 }
