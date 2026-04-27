@@ -1,5 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
+import api from "@/lib/api";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useNavigate } from "react-router-dom";
-const API = 'http://localhost:8082';
+import { toast } from "sonner";
 
 // Zod Schema
 const signupSchema = z.object({
@@ -47,17 +47,12 @@ export default function Signup() {
       //   console.log(key, value);
       // }
 
-      const res = await axios.post(`${API}/api/users/signup`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      if (!res.status) alert(res.data.message);
+      const res = await api.post(`/api/users/signup`, formData);
+      if (!res.status) toast.error(res.data.message);
       navigate("/signin");
     } catch (error: any) {
       console.error(error);
-      alert(error?.response?.data?.message || "Signup failed");
+      toast.error(error?.response?.data?.message || "Signup failed");
     } finally {
       setLoading(false);
     }
