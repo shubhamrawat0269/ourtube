@@ -35,10 +35,6 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
-      {
-        path: "/watch",
-        element: <VideoSinglePage />,
-      },
     ],
   },
   {
@@ -58,6 +54,10 @@ const router = createBrowserRouter([
       </PublicRoute>
     ),
     children: [],
+  },
+  {
+    path: "/watch",
+    element: <VideoSinglePage />,
   },
 ]);
 
