@@ -6,13 +6,13 @@
 These make your app usable
 
 1. Authentication System
-Signup / Login ⏳
-JWT-based auth
-Protected routes
+Signup / Login ✅
+JWT-based auth ✅
+Protected routes ✅
 2. Video Upload System
-Upload video + thumbnail
-Store in Cloudinary
-Save metadata in DB
+Store in Cloudinary ✅
+Upload video + thumbnail ✅
+Save metadata in DB ⏳
 3. Video Feed (Homepage)
 Fetch all videos
 Grid UI (you already built this 👌)

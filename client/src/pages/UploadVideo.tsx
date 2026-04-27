@@ -3,7 +3,6 @@ import api from "@/lib/api";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-
 import { toast } from "sonner";
 
 import { Input } from "@/components/ui/input";
@@ -25,6 +24,8 @@ const schema = z.object({
 
 const UploadVideo = () => {
   const [loading, setLoading] = useState(false);
+  const [videoPreview, setVideoPreview] = useState<string | null>(null);
+  const [thumbPreview, setThumbPreview] = useState<string | null>(null);
 
   const {
     register,
@@ -49,9 +50,11 @@ const UploadVideo = () => {
 
       const res = await api.post(`/api/videos/upload-video`, formData);
 
-      if (!res.status) toast.error(res.data.message);
       toast.success(res.data.message);
+
       reset();
+      setVideoPreview(null);
+      setThumbPreview(null);
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Upload failed");
     } finally {
@@ -60,28 +63,34 @@ const UploadVideo = () => {
   };
 
   return (
-    <div className="max-w-5xl mx-auto p-6">
-      <Card className="shadow-xl rounded-2xl">
+    <div className="max-w-6xl mx-auto p-6">
+      <Card className="rounded-2xl shadow-lg border">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold">Upload Video</CardTitle>
+          <CardTitle className="text-2xl font-bold">
+            Upload New Video 🎬
+          </CardTitle>
         </CardHeader>
 
-        <CardContent className="space-y-6">
+        <CardContent>
           <form
             onSubmit={handleSubmit(onSubmit)}
-            className="grid md:grid-cols-2 gap-6"
+            className="grid md:grid-cols-2 gap-8"
           >
-            {/* LEFT SIDE */}
-            <div className="space-y-4">
+            {/* LEFT - DETAILS */}
+            <div className="space-y-5">
               <div>
                 <Label>Title</Label>
-                <Input {...register("title")} />
+                <Input placeholder="Enter video title" {...register("title")} />
                 <p className="text-red-500 text-sm">{errors.title?.message}</p>
               </div>
 
               <div>
                 <Label>Description</Label>
-                <Textarea {...register("description")} />
+                <Textarea
+                  rows={5}
+                  placeholder="Tell viewers about your video"
+                  {...register("description")}
+                />
                 <p className="text-red-500 text-sm">
                   {errors.description?.message}
                 </p>
@@ -89,7 +98,10 @@ const UploadVideo = () => {
 
               <div>
                 <Label>Category</Label>
-                <Input {...register("category")} />
+                <Input
+                  placeholder="e.g. Tech, Education"
+                  {...register("category")}
+                />
                 <p className="text-red-500 text-sm">
                   {errors.category?.message}
                 </p>
@@ -97,40 +109,85 @@ const UploadVideo = () => {
 
               <div>
                 <Label>Tags</Label>
-                <Input placeholder="tag1, tag2" {...register("tags")} />
+                <Input
+                  placeholder="react, node, tutorial"
+                  {...register("tags")}
+                />
                 <p className="text-red-500 text-sm">{errors.tags?.message}</p>
               </div>
             </div>
 
-            {/* RIGHT SIDE */}
-            <div className="space-y-4">
-              <div className="border-2 border-dashed rounded-xl p-4 text-center">
-                <Label>Upload Video</Label>
-                <Input type="file" accept="video/*" {...register("video")} />
+            {/* RIGHT - FILE UPLOAD */}
+            <div className="space-y-6">
+              {/* VIDEO */}
+              <div className="border-2 border-dashed rounded-xl p-5 text-center hover:border-primary transition">
+                <Label className="block mb-2 font-medium">
+                  Upload Video 🎥
+                </Label>
+
+                <Input
+                  type="file"
+                  accept="video/*"
+                  {...register("video")}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      setVideoPreview(URL.createObjectURL(file));
+                    }
+                  }}
+                />
+
+                {videoPreview && (
+                  <video
+                    src={videoPreview}
+                    controls
+                    className="mt-4 rounded-lg max-h-40 mx-auto"
+                  />
+                )}
+
                 <p className="text-red-500 text-sm">{errors.video?.message}</p>
               </div>
 
-              <div className="border-2 border-dashed rounded-xl p-4 text-center">
-                <Label>Upload Thumbnail</Label>
+              {/* THUMBNAIL */}
+              <div className="border-2 border-dashed rounded-xl p-5 text-center hover:border-primary transition">
+                <Label className="block mb-2 font-medium">
+                  Upload Thumbnail 🖼️
+                </Label>
+
                 <Input
                   type="file"
                   accept="image/*"
                   {...register("thumbnail")}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      setThumbPreview(URL.createObjectURL(file));
+                    }
+                  }}
                 />
+
+                {thumbPreview && (
+                  <img
+                    src={thumbPreview}
+                    alt="Preview"
+                    className="mt-4 rounded-lg max-h-40 mx-auto"
+                  />
+                )}
+
                 <p className="text-red-500 text-sm">
                   {errors.thumbnail?.message}
                 </p>
               </div>
             </div>
 
-            {/* FULL WIDTH BUTTON */}
+            {/* SUBMIT */}
             <div className="md:col-span-2">
               <Button
                 type="submit"
-                className="w-full cursor-pointer"
+                className="w-full cursor-pointer text-base py-5 rounded-md"
                 disabled={loading}
               >
-                {loading ? "Uploading..." : "Upload Video"}
+                {loading ? "Uploading..." : "🚀 Upload Video"}
               </Button>
             </div>
           </form>
