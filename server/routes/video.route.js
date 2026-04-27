@@ -15,9 +15,29 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-router.get("/all-videos", async (req, res) => {
+router.get("/all-videos", authMiddleware, async (req, res) => {
   try {
     const videos = await Video.find().sort({ createdAt: -1 });
+
+    res.status(200).json({
+      status: true,
+      count: videos.length,
+      videos,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      status: false,
+      message: "Server Error",
+    });
+  }
+});
+
+router.get("/own-videos", authMiddleware, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const videos = await Video.find({ userId }).sort({ createdAt: -1 });
+    console.log(videos);
 
     res.status(200).json({
       status: true,

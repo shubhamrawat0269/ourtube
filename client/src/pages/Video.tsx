@@ -9,14 +9,18 @@ export default function Video() {
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const API = import.meta.env.VITE_API_BASE_URL;
-  const token = localStorage.getItem("token");
+  const API = "http://localhost:8082";
+  const token = JSON.parse(localStorage.getItem("token"));
 
   // ================= FETCH VIDEOS ================= //
   const fetchVideos = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`${API}/api/videos/all-videos`);
+      const res = await axios.get(`${API}/api/videos/own-videos`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       setVideos(res.data.videos);
     } catch (error) {
       toast.error("Failed to load videos");
@@ -74,7 +78,7 @@ export default function Video() {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">All Videos</h1>
+      <h1 className="text-2xl font-bold mb-6">My Videos</h1>
 
       {loading ? (
         <p>Loading...</p>
