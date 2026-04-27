@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "@/lib/api";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,18 +9,11 @@ export default function Video() {
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const API = "http://localhost:8082";
-  const token = JSON.parse(localStorage.getItem("token"));
-
   // ================= FETCH VIDEOS ================= //
   const fetchVideos = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`${API}/api/videos/own-videos`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const res = await api.get(`/api/videos/own-videos`);
       setVideos(res.data.videos);
     } catch (error) {
       toast.error("Failed to load videos");
@@ -36,12 +29,7 @@ export default function Video() {
   // ================= DELETE VIDEO ================= //
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`${API}/api/videos/delete-video/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
+      await api.delete(`/api/videos/delete-video/${id}`);
       toast.success("Video deleted");
       fetchVideos();
     } catch (error) {

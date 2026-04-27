@@ -1,4 +1,4 @@
-import axios from "axios";
+import api from "@/lib/api";
 import { toast } from "sonner";
 import VideoCard from "./VideoCard";
 import { useEffect, useState } from "react";
@@ -8,15 +8,11 @@ export default function VideoGrid() {
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const API = "http://localhost:8082";
-
-  const token = localStorage.getItem("token");
-
   // ================= FETCH =================
   const fetchVideos = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`${API}/api/videos/all-videos`);
+      const res = await api.get(`/api/videos/all-videos`);
       setVideos(res.data.videos);
     } catch (error) {
       toast.error("Failed to fetch videos");
@@ -32,11 +28,7 @@ export default function VideoGrid() {
   // ================= DELETE =================
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`${API}/api/videos/delete-video/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await api.delete(`/api/videos/delete-video/${id}`);
 
       toast.success("Video deleted");
       fetchVideos();
@@ -47,22 +39,22 @@ export default function VideoGrid() {
 
   // ================= EDIT =================
   const handleEdit = async (video) => {
-    const newTitle = prompt("Enter new title", video.title);
-    if (!newTitle) return;
+    // const newTitle = prompt("Enter new title", video.title);
+    // if (!newTitle) return;
 
     try {
-      await axios.put(
-        `${API}/api/videos/update-video/${video._id}`,
-        { title: newTitle },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
+    //   await axios.put(
+    //     `${API}/api/videos/update-video/${video._id}`,
+    //     { title: newTitle },
+    //     {
+    //       headers: {
+    //         Authorization: `Bearer ${token}`,
+    //       },
+    //     },
+    //   );
 
-      toast.success("Video updated");
-      fetchVideos();
+    //   toast.success("Video updated");
+    //   fetchVideos();
     } catch (error) {
       toast.error("Update failed");
     }

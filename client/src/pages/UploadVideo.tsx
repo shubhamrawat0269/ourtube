@@ -1,11 +1,10 @@
 import { useState } from "react";
-import axios from "axios";
+import api from "@/lib/api";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { toast } from "sonner";
-const API = "http://localhost:8082";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -48,17 +47,11 @@ const UploadVideo = () => {
       formData.append("video", data.video[0]);
       formData.append("thumbnail", data.thumbnail[0]);
 
-      const token = JSON.parse(localStorage.getItem("token"));
-      const res = await axios.post(`${API}/api/videos/upload-video`, formData, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      
-      if(!res.status) toast.error(res.data.message);
+      const res = await api.post(`/api/videos/upload-video`, formData);
+
+      if (!res.status) toast.error(res.data.message);
       toast.success(res.data.message);
       reset();
-      // console.log(res.data.data, "Upload Video Done");
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Upload failed");
     } finally {
@@ -132,7 +125,11 @@ const UploadVideo = () => {
 
             {/* FULL WIDTH BUTTON */}
             <div className="md:col-span-2">
-              <Button type="submit" className="w-full cursor-pointer" disabled={loading}>
+              <Button
+                type="submit"
+                className="w-full cursor-pointer"
+                disabled={loading}
+              >
                 {loading ? "Uploading..." : "Upload Video"}
               </Button>
             </div>
