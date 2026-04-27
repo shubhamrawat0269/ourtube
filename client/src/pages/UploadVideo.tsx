@@ -4,12 +4,14 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { toast } from "sonner";
+const API = "http://localhost:8082";
+
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-const API = "http://localhost:8082";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const schema = z.object({
   title: z.string().min(3, "Title is required"),
@@ -45,24 +47,19 @@ const UploadVideo = () => {
       formData.append("video", data.video[0]);
       formData.append("thumbnail", data.thumbnail[0]);
 
-      const token = localStorage.getItem("token");
-
-      const res = await axios.post(`${API}/api/upload-video`, formData, {
+      const token = JSON.parse(localStorage.getItem("token"));
+      const res = await axios.post(`${API}/api/videos/upload-video`, formData, {
         headers: {
-          "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
         },
       });
-
-      alert('Video Uploaded')
-
-    //   toast({ title: "Success", description: res.data.message });
-    } catch (error) {
-    //   toast({
-    //     title: "Error",
-    //     description: error.response?.data?.message || "Upload failed",
-    //     variant: "destructive",
-    //   });
+      
+      if(!res.status) toast.error(res.data.message);
+      toast.success(res.data.message);
+      
+      // console.log(res.data.data, "Upload Video Done");
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Upload failed");
     } finally {
       setLoading(false);
     }
@@ -134,7 +131,7 @@ const UploadVideo = () => {
 
             {/* FULL WIDTH BUTTON */}
             <div className="md:col-span-2">
-              <Button className="w-full" disabled={loading}>
+              <Button type="submit" className="w-full cursor-pointer" disabled={loading}>
                 {loading ? "Uploading..." : "Upload Video"}
               </Button>
             </div>

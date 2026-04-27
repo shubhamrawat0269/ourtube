@@ -19,6 +19,9 @@ router.post("/upload-video", authMiddleware, async (req, res) => {
   try {
     const user = req.user;
     /* 1.  Uploading Video and thumbnail to cloudinary */
+    console.log(req.files.video);
+    console.log(req.files.thumbnail);
+  
     const uploadedVideo = await cloudinary.uploader.upload(
       req.files.video.tempFilePath,
       {
@@ -53,7 +56,9 @@ router.post("/upload-video", authMiddleware, async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ status: false, message: "Server Error" });
+    res
+      .status(500)
+      .json({ status: false, message: error.message || "Server Error" });
   }
 });
 
