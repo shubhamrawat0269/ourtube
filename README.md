@@ -1,4 +1,4 @@
-## Main Goal : ✅
+## Main Goal : ✅ ⏳
 - I am building a video streaming application just like your youtube. 
 
 🟠 PHASE 1 — Core Foundation (MUST HAVE) 
@@ -6,7 +6,7 @@
 These make your app usable
 
 1. Authentication System
-Signup / Login
+Signup / Login ⏳
 JWT-based auth
 Protected routes
 2. Video Upload System
