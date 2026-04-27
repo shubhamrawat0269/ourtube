@@ -15,7 +15,7 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-router.get("/all-videos", authMiddleware, async (req, res) => {
+router.get("/all-videos", async (req, res) => {
   try {
     const videos = await Video.find().sort({ createdAt: -1 });
 
