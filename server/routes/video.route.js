@@ -15,13 +15,31 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+router.get("/all-videos", async (req, res) => {
+  try {
+    const videos = await Video.find().sort({ createdAt: -1 });
+
+    res.status(200).json({
+      status: true,
+      count: videos.length,
+      videos,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      status: false,
+      message: "Server Error",
+    });
+  }
+});
+
 router.post("/upload-video", authMiddleware, async (req, res) => {
   try {
     const user = req.user;
     /* 1.  Uploading Video and thumbnail to cloudinary */
     console.log(req.files.video);
     console.log(req.files.thumbnail);
-  
+
     const uploadedVideo = await cloudinary.uploader.upload(
       req.files.video.tempFilePath,
       {

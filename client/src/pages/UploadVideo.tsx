@@ -30,6 +30,7 @@ const UploadVideo = () => {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(schema),
@@ -56,7 +57,7 @@ const UploadVideo = () => {
       
       if(!res.status) toast.error(res.data.message);
       toast.success(res.data.message);
-      
+      reset();
       // console.log(res.data.data, "Upload Video Done");
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Upload failed");
