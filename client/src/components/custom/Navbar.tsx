@@ -1,14 +1,13 @@
-import { Menu, Search, Bell, User } from "lucide-react";
+import { Menu, Search, Bell } from "lucide-react";
 
-import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useNavigate } from "react-router-dom";
+import ProfileDropdown from "./ProfileDropdown";
 
 export default function Navbar({ toggleSidebar }) {
+  const navigate = useNavigate();
   const token = localStorage.getItem("token");
-  const userDetailToken = localStorage.getItem("userDetails");
-  const userDetails = JSON.parse(userDetailToken);
 
   return (
     <nav className="w-full border-b bg-background px-4 py-2 flex items-center justify-between">
@@ -35,23 +34,18 @@ export default function Navbar({ toggleSidebar }) {
           <Bell className="h-5 w-5" />
         </Button>
 
-        {!token && (
+        {!token ? (
           <>
-            <Link to={`/signin`} className="pr-2 text-base underline">
+            <Button
+              onClick={() => navigate("/signin")}
+              className={"cursor-pointer px-4"}
+            >
               Login
-            </Link>
-            <Link to={`/signup`} className="pr-2 text-base underline">
-              Register
-            </Link>
+            </Button>
           </>
+        ) : (
+          <ProfileDropdown />
         )}
-
-        <Avatar>
-          <AvatarImage src={userDetails?.logoUrl} alt={userDetails?.logoId} />
-          <AvatarFallback>
-            <User className="h-4 w-4" />
-          </AvatarFallback>
-        </Avatar>
       </div>
     </nav>
   );
