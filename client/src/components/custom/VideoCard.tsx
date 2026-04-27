@@ -1,5 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useNavigate } from "react-router-dom";
 
 function formatViews(views) {
   if (!views) return "0 views";
@@ -31,8 +32,16 @@ function timeAgo(date) {
 }
 
 export default function VideoCard({ video }) {
+  const navigate = useNavigate();
+
+  function navigateToSingleVideoSection() {
+    navigate(`/watch?v=${video._id}`);
+  }
   return (
-    <Card className="border-0 ring-0 shadow-none cursor-pointer py-0 rounded-xl">
+    <Card
+      className="border-0 ring-0 shadow-none cursor-pointer py-0 rounded-xl"
+      onClick={navigateToSingleVideoSection}
+    >
       <div className="aspect-video rounded-xl overflow-hidden">
         <img
           src={video.thumbnailUrl}
