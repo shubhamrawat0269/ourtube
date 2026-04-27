@@ -6,6 +6,8 @@ import DashboardLayout from "./layouts/DashboardLayout";
 import Home from "./pages/Home";
 import UploadVideo from "./pages/UploadVideo";
 import Video from "./pages/Video";
+import ProtectedRoute from "./routes/ProtectedRoute";
+import PublicRoute from "./routes/PublicRoute";
 
 const router = createBrowserRouter([
   {
@@ -18,22 +20,38 @@ const router = createBrowserRouter([
       },
       {
         path: "/upload-video",
-        element: <UploadVideo />,
+        element: (
+          <ProtectedRoute>
+            <UploadVideo />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "/my-videos",
-        element: <Video />,
+        element: (
+          <ProtectedRoute>
+            <Video />
+          </ProtectedRoute>
+        ),
       },
     ],
   },
   {
     path: "/signin",
-    element: <Login />,
+    element: (
+      <PublicRoute>
+        <Login />
+      </PublicRoute>
+    ),
     children: [],
   },
   {
     path: "/signup",
-    element: <Signup />,
+    element: (
+      <PublicRoute>
+        <Signup />
+      </PublicRoute>
+    ),
     children: [],
   },
 ]);

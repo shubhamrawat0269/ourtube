@@ -47,7 +47,7 @@ export default function Navbar({ toggleSidebar }) {
         )}
 
         <Avatar>
-          <AvatarImage src={userDetails.logoUrl} alt={userDetails.logoId} />
+          <AvatarImage src={userDetails?.logoUrl} alt={userDetails?.logoId} />
           <AvatarFallback>
             <User className="h-4 w-4" />
           </AvatarFallback>

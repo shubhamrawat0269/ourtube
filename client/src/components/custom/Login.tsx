@@ -1,7 +1,8 @@
-import { useState } from "react";
-import axios from "axios";
-import { useForm } from "react-hook-form";
 import { z } from "zod";
+import api from "@/lib/api";
+
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,7 +10,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { Label } from "@/components/ui/label";
-const API = "http://localhost:8082";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email"),
@@ -32,11 +32,11 @@ export default function Login() {
     try {
       setLoading(true);
 
-      const res = await axios.post(`${API}/api/users/signin`, data);
+      const res = await api.post(`/api/users/signin`, data);
       if (!res.status) alert(res.data.message);
 
       localStorage.setItem("token", JSON.stringify(res.data.token));
-      localStorage.setItem("userDetails", JSON.stringify(res.data.data));
+      localStorage.setItem("userDetails", JSON.stringify(res.data.user));
       navigate("/");
     } catch (error: any) {
       alert(error?.response?.data?.message || "Login failed");

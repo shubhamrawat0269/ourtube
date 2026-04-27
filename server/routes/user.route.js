@@ -96,7 +96,7 @@ router.post("/signin", async (req, res) => {
         logoId: user.logoId,
       },
       process.env.JWT_SECRET,
-      { expiresIn: "365d" },
+      { expiresIn: "7d" },
     );
 
     // 5. Send response
@@ -104,7 +104,7 @@ router.post("/signin", async (req, res) => {
       status: true,
       message: "Login successful",
       token,
-      data: {
+      user: {
         id: user._id,
         name: user.name,
         email: user.email,
@@ -200,7 +200,8 @@ router.put("/unsubscribe/:channelId", authMiddleware, async (req, res) => {
     let loggedInUserDetails = await User.findById(loggedInUserId);
     loggedInUserDetails.subscribedChannels =
       loggedInUserDetails.subscribedChannels.filter(
-        (userId) => userId.toString() !== channelToBeUnSubscribeDetails._id.toString(),
+        (userId) =>
+          userId.toString() !== channelToBeUnSubscribeDetails._id.toString(),
       );
 
     await loggedInUserDetails.save();
