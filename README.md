@@ -12,10 +12,10 @@ Protected routes ✅
 2. Video Upload System
 Store in Cloudinary ✅
 Upload video + thumbnail ✅
-Save metadata in DB ⏳
+Save metadata in DB ✅
 3. Video Feed (Homepage)
-Fetch all videos
-Grid UI (you already built this 👌)
+Fetch all videos ✅
+Grid UI  ✅
 4. Single Video Page (VERY IMPORTANT)
   Video player
   Title, description, tags
