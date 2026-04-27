@@ -2,6 +2,7 @@ import { z } from "zod";
 import api from "@/lib/api";
 
 import { useState } from "react";
+import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -39,7 +40,7 @@ export default function Login() {
       localStorage.setItem("userDetails", JSON.stringify(res.data.user));
       navigate("/");
     } catch (error: any) {
-      alert(error?.response?.data?.message || "Login failed");
+      toast.error(error?.response?.data?.message || "Login failed");
     } finally {
       setLoading(false);
     }
