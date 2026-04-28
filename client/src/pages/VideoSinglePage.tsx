@@ -1,7 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 import api from "@/lib/api";
-import VideoJS from "./VideoJS";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -35,38 +33,34 @@ const VideoSinglePage = () => {
   const [searchParams] = useSearchParams();
   const [video, setVideo] = useState<any>(null);
   const [related, setRelated] = useState([]);
-  const playerRef = useRef(null);
+  const [loading, setLoading] = useState(true);
 
-  const videoJsOptions = {
-    autoplay: true,
-    controls: true,
-    responsive: true,
-    fluid: true,
-    sources: [
-      {
-        src: "https://ik.imagekit.io/blogfast/modules-type.mp4?updatedAt=1777363845931",
-        type: "video/mp4",
-      },
-    ],
-  };
+  const videoId = searchParams.get("v");
 
-  const handlePlayerReady = (player) => {
-    playerRef.current = player;
+  useEffect(() => {
+    if (!videoId) return;
 
-    // You can handle player events here, for example:
-    player.on("waiting", () => {
-      console.log("player is waiting");
-    });
+    const fetchVideo = async () => {
+      try {
+        setLoading(true);
 
-    player.on("dispose", () => {
-      console.log("player will dispose");
-    });
-  };
+        const res = await api.get(`/api/videos/video/${videoId}`);
+        setVideo(res.data.video);
+      } catch (error: any) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  // const videoId = searchParams.get("v");
-  // console.log(videoId);
+    fetchVideo();
+  }, [videoId]);
 
-  //    if (!video) return <p className="p-6">Loading...</p>;
+  if (loading) return <p className="p-6">Loading video...</p>;
+  if (!video)
+    return (
+      <p className="p-6 text-red-500">Video not found or failed to load</p>
+    );
 
   return (
     <div className="max-w-7xl mx-auto p-4 grid lg:grid-cols-3 gap-6">
@@ -74,7 +68,12 @@ const VideoSinglePage = () => {
       <div className="lg:col-span-2 space-y-4">
         {/* VIDEO PLAYER */}
         <div className="aspect-video bg-black rounded-md overflow-hidden">
-          <VideoJS options={videoJsOptions} onReady={handlePlayerReady} />
+          <video
+            src={video.videoUrl}
+            controls
+            autoPlay
+            className="w-full h-full"
+          />
         </div>
 
         {/* TITLE */}
@@ -86,8 +85,7 @@ const VideoSinglePage = () => {
           <div className="flex items-center gap-3">
             <Avatar>
               <AvatarImage src={video?.channelLogo} />
-              {/* <AvatarFallback>{video.channelName?.charAt(0)}</AvatarFallback> */}
-              <AvatarFallback>U</AvatarFallback>
+              <AvatarFallback>{video.channelName?.charAt(0)}</AvatarFallback>
             </Avatar>
 
             <div>
