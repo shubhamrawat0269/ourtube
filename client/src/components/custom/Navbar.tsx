@@ -5,7 +5,11 @@ import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import ProfileDropdown from "./ProfileDropdown";
 
-export default function Navbar({ toggleSidebar }) {
+type NavbarProps = {
+  toggleSidebar: () => void;
+};
+
+export default function Navbar({ toggleSidebar }: NavbarProps) {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 

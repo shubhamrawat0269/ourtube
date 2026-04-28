@@ -4,6 +4,19 @@ import VideoCard from "./VideoCard";
 import { useEffect, useState } from "react";
 import VideoCardSkeleton from "./VideoCardSkeleton";
 
+type VideoType = {
+  _id: string;
+  title: string;
+  description: string;
+  category: string;
+  thumbnailUrl: string;
+  channelLogo: string;
+  channelName: string;
+  tags: string[];
+  views: number;
+  createdAt: string;
+};
+
 export default function VideoGrid() {
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -26,35 +39,35 @@ export default function VideoGrid() {
   }, []);
 
   // ================= DELETE =================
-  const handleDelete = async (id) => {
+  const handleDelete = async (id: string) => {
     try {
       await api.delete(`/api/videos/delete-video/${id}`);
 
       toast.success("Video deleted");
       fetchVideos();
-    } catch (error) {
+    } catch (error: any) {
       toast.error(error.response?.data?.message || "Delete failed");
     }
   };
 
   // ================= EDIT =================
-  const handleEdit = async (video) => {
+  const handleEdit = async (video: VideoType) => {
     // const newTitle = prompt("Enter new title", video.title);
     // if (!newTitle) return;
+    console.log(video);
 
     try {
-    //   await axios.put(
-    //     `${API}/api/videos/update-video/${video._id}`,
-    //     { title: newTitle },
-    //     {
-    //       headers: {
-    //         Authorization: `Bearer ${token}`,
-    //       },
-    //     },
-    //   );
-
-    //   toast.success("Video updated");
-    //   fetchVideos();
+      //   await axios.put(
+      //     `${API}/api/videos/update-video/${video._id}`,
+      //     { title: newTitle },
+      //     {
+      //       headers: {
+      //         Authorization: `Bearer ${token}`,
+      //       },
+      //     },
+      //   );
+      //   toast.success("Video updated");
+      //   fetchVideos();
     } catch (error) {
       toast.error("Update failed");
     }
@@ -66,7 +79,7 @@ export default function VideoGrid() {
   return (
     <div className="p-6">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {videos.map((video) => (
+        {videos.map((video: VideoType) => (
           <VideoCard
             key={video._id}
             video={video}

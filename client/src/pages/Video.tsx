@@ -5,8 +5,17 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
+type VideoType = {
+  _id: string;
+  title: string;
+  description: string;
+  category: string;
+  thumbnailUrl: string;
+  tags: string[];
+};
+
 export default function Video() {
-  const [videos, setVideos] = useState([]);
+  const [videos, setVideos] = useState<VideoType[]>([]);
   const [loading, setLoading] = useState(false);
 
   // ================= FETCH VIDEOS ================= //
@@ -27,19 +36,20 @@ export default function Video() {
   }, []);
 
   // ================= DELETE VIDEO ================= //
-  const handleDelete = async (id) => {
+  const handleDelete = async (id: string) => {
     try {
       await api.delete(`/api/videos/delete-video/${id}`);
       toast.success("Video deleted");
       fetchVideos();
-    } catch (error) {
+    } catch (error: any) {
       toast.error(error.response?.data?.message || "Delete failed");
     }
   };
 
   // ================= EDIT VIDEO ================= //
-  const handleEdit = async (video) => {
+  const handleEdit = async (video: VideoType) => {
     alert("Edit feature yet to be implemented");
+    console.log(video);
     // const newTitle = prompt("Enter new title", video.title);
     // if (!newTitle) return;
 

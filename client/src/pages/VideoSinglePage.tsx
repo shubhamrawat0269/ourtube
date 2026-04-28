@@ -78,7 +78,7 @@ const VideoSinglePage = () => {
     }
   };
 
-  function navigateToSingleVideoSection(id) {
+  function navigateToSingleVideoSection(id: string) {
     navigate(`/watch?v=${id}`);
   }
 

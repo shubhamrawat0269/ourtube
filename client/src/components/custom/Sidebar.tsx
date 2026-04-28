@@ -1,7 +1,18 @@
 import { Home, Flame, Video } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
-function Sidebar({ isOpen }) {
+type SidebarProps = {
+  isOpen: boolean;
+};
+
+type SidebarItemProps = {
+  icon: any;
+  label: string;
+  link: string;
+  isOpen: boolean;
+};
+
+function Sidebar({ isOpen }: SidebarProps) {
   return (
     <aside
       className={`bg-background border-r h-full p-3 space-y-2 transition-all duration-300 ${
@@ -30,7 +41,7 @@ function Sidebar({ isOpen }) {
   );
 }
 
-function SidebarItem({ icon, label, isOpen, link }) {
+function SidebarItem({ icon, label, isOpen, link }: SidebarItemProps) {
   return (
     <NavLink
       to={link}

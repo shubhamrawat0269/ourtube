@@ -2,16 +2,35 @@ import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
 
-function formatViews(views) {
+type VideoType = {
+  _id: string;
+  title: string;
+  description: string;
+  category: string;
+  thumbnailUrl: string;
+  channelLogo: string;
+  channelName: string;
+  tags: string[];
+  views: number;
+  createdAt: string;
+};
+
+type VideoCardProps = {
+  video: VideoType;
+  onEdit: (video: VideoType) => Promise<void>;
+  onDelete: (id: string) => Promise<void>;
+};
+
+function formatViews(views: number) {
   if (!views) return "0 views";
   if (views >= 1_000_000) return (views / 1_000_000).toFixed(1) + "M views";
   if (views >= 1_000) return (views / 1_000).toFixed(1) + "K views";
   return views + " views";
 }
 
-function timeAgo(date) {
+function timeAgo(date: string) {
   const now = new Date();
-  const diff = Math.floor((now - new Date(date)) / 1000);
+  const diff = Math.floor((now.getTime() - new Date(date).getTime()) / 1000);
 
   const units = [
     { label: "year", seconds: 31536000 },
@@ -31,7 +50,7 @@ function timeAgo(date) {
   return "Just now";
 }
 
-export default function VideoCard({ video }) {
+export default function VideoCard({ video, onEdit, onDelete }: VideoCardProps) {
   const navigate = useNavigate();
 
   function navigateToSingleVideoSection() {

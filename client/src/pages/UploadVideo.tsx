@@ -145,7 +145,7 @@ const UploadVideo = () => {
                   />
                 )}
 
-                <p className="text-red-500 text-sm">{errors.video?.message}</p>
+                <p className="text-red-500 text-sm">{errors.video?.message?.toString()}</p>
               </div>
 
               {/* THUMBNAIL */}
@@ -175,7 +175,7 @@ const UploadVideo = () => {
                 )}
 
                 <p className="text-red-500 text-sm">
-                  {errors.thumbnail?.message}
+                  {errors.thumbnail?.message?.toString()}
                 </p>
               </div>
             </div>

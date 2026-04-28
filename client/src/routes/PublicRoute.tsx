@@ -1,6 +1,11 @@
 import { Navigate } from "react-router-dom";
+import type { ReactNode } from "react";
 
-export default function PublicRoute({ children }) {
+type ProtectedRouteProps = {
+  children: ReactNode;
+};
+
+export default function PublicRoute({ children }: ProtectedRouteProps) {
   const token = localStorage.getItem("token");
 
   if (token) {

@@ -29,7 +29,7 @@ export default function ProfileDropdown() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
+      <DropdownMenuTrigger>
         <Button variant="ghost" className="rounded-full">
           <Avatar>
             <AvatarFallback>
