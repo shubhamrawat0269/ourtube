@@ -55,6 +55,7 @@ export default function VideoCard({ video, onEdit, onDelete }: VideoCardProps) {
 
   function navigateToSingleVideoSection() {
     navigate(`/watch?v=${video._id}`);
+    console.log(onEdit, onDelete)
   }
   return (
     <Card
