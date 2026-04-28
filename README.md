@@ -20,7 +20,7 @@ Grid UI  ✅
   Video player
   Title, description, tags
 
-👉 This alone already beats 70% of candidates.
+👉 This alone already beats 70% of candidates. So, Deploy the project and generate a repo and vercel link.
 
 ----------------------------------------
 
