@@ -3,7 +3,7 @@ import api from "@/lib/api";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 function formatViews(views: number) {
   if (views >= 1_000_000) return (views / 1_000_000).toFixed(1) + "M views";
@@ -30,6 +30,7 @@ function timeAgo(date: string) {
 }
 
 const VideoSinglePage = () => {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [video, setVideo] = useState<any>(null);
   const [related, setRelated] = useState([]);
@@ -37,23 +38,55 @@ const VideoSinglePage = () => {
 
   const videoId = searchParams.get("v");
 
+  const fetchVideo = async () => {
+    try {
+      setLoading(true);
+
+      const res = await api.get(`/api/videos/video/${videoId}`);
+      setVideo(res.data.video);
+    } catch (error: any) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchAllVideos = async () => {
+    try {
+      setLoading(true);
+
+      const res = await api.get("/api/videos/all-videos");
+
+      // 🔥 IMPORTANT: map backend data properly
+      const formatted = res.data.videos.map((v: any) => ({
+        _id: v._id,
+        title: v.title,
+        thumbnailUrl: v.thumbnailUrl,
+        views: v.views,
+        createdAt: v.createdAt,
+
+        // 👇 populated user
+        channelName: v.userId?.channelName,
+        channelLogo: v.userId?.logoUrl,
+      }));
+
+      setRelated(formatted);
+    } catch (error) {
+      console.error("Failed to fetch videos", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  function navigateToSingleVideoSection(id) {
+    navigate(`/watch?v=${id}`);
+  }
+
   useEffect(() => {
     if (!videoId) return;
 
-    const fetchVideo = async () => {
-      try {
-        setLoading(true);
-
-        const res = await api.get(`/api/videos/video/${videoId}`);
-        setVideo(res.data.video);
-      } catch (error: any) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchVideo();
+    fetchAllVideos();
   }, [videoId]);
 
   if (loading) return <p className="p-6">Loading video...</p>;
@@ -63,9 +96,9 @@ const VideoSinglePage = () => {
     );
 
   return (
-    <div className="max-w-7xl mx-auto p-4 grid lg:grid-cols-3 gap-6">
+    <div className="max-w-385 mx-auto p-4 px-6 grid lg:grid-cols-7 gap-6">
       {/* LEFT SIDE */}
-      <div className="lg:col-span-2 space-y-4">
+      <div className="lg:col-span-5 space-y-4">
         {/* VIDEO PLAYER */}
         <div className="aspect-video bg-black rounded-md overflow-hidden">
           <video
@@ -119,10 +152,11 @@ const VideoSinglePage = () => {
       </div>
 
       {/* RIGHT SIDE - RELATED VIDEOS */}
-      <div className="space-y-4">
+      <div className="lg:col-span-2 space-y-2">
         {related.map((item: any) => (
           <div
             key={item._id}
+            onClick={() => navigateToSingleVideoSection(item._id)}
             className="flex gap-3 cursor-pointer hover:bg-muted p-2 rounded-lg"
           >
             <img
