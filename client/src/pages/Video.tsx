@@ -61,6 +61,8 @@ export default function Video() {
     // }
   };
 
+  if(!videos.length) return <h1>No Videos to be displayed yet.</h1>
+
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-6">My Videos</h1>
