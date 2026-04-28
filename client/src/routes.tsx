@@ -9,6 +9,7 @@ import Video from "./pages/Video";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import PublicRoute from "./routes/PublicRoute";
 import VideoSinglePage from "./pages/VideoSinglePage";
+import VideoPageLayout from "./layouts/VideoPageLayout";
 
 const router = createBrowserRouter([
   {
@@ -57,7 +58,13 @@ const router = createBrowserRouter([
   },
   {
     path: "/watch",
-    element: <VideoSinglePage />,
+    element: <VideoPageLayout />,
+    children: [
+      {
+        path: "/watch",
+        element: <VideoSinglePage />,
+      },
+    ],
   },
 ]);
 
