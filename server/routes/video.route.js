@@ -17,7 +17,9 @@ cloudinary.config({
 
 router.get("/all-videos", async (req, res) => {
   try {
-    const videos = await Video.find().sort({ createdAt: -1 });
+    const videos = await Video.find()
+      .populate("userId", "channelName logoUrl subscribers")
+      .sort({ createdAt: -1 });
 
     res.status(200).json({
       status: true,
@@ -33,10 +35,60 @@ router.get("/all-videos", async (req, res) => {
   }
 });
 
+router.get("/video/:id", async (req, res) => {
+  try {
+    const videoId = req.params.id;
+
+    // 1. Find video + populate user
+    const video = await Video.findById(videoId)
+      .populate("userId", "channelName logoUrl")
+      .lean();
+
+    if (!video) {
+      return res.status(404).json({
+        status: false,
+        message: "Video not found",
+      });
+    }
+
+    // 2. Format response (clean for frontend)
+    const formattedVideo = {
+      _id: video._id,
+      title: video.title,
+      description: video.description,
+      category: video.category,
+      tags: video.tags,
+
+      videoUrl: video.videoUrl,
+      thumbnailUrl: video.thumbnailUrl,
+
+      views: video.views,
+      createdAt: video.createdAt,
+
+      // 👇 important mapping
+      channelName: video.userId?.channelName,
+      channelLogo: video.userId?.logoUrl,
+    };
+
+    res.status(200).json({
+      status: true,
+      video: formattedVideo,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      status: false,
+      message: "Server Error",
+    });
+  }
+});
+
 router.get("/own-videos", authMiddleware, async (req, res) => {
   try {
     const userId = req.user.userId;
-    const videos = await Video.find({ userId }).sort({ createdAt: -1 });
+    const videos = await Video.find({ userId })
+      .populate("userId", "channelName logoUrl subscribers")
+      .sort({ createdAt: -1 });
     console.log(videos);
 
     res.status(200).json({
