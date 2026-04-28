@@ -43,6 +43,9 @@
     "globals": "^17.5.0",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.58.2",
+    "video.js": "^7.21.3",
+    "videojs-contrib-quality-levels": "^3.0.0",
+    "videojs-http-source-selector": "^1.1.6",
     "vite": "^8.0.10"
   }
 }

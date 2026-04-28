@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import api from "@/lib/api";
-
+import VideoJS from "./VideoJS";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -35,9 +35,36 @@ const VideoSinglePage = () => {
   const [searchParams] = useSearchParams();
   const [video, setVideo] = useState<any>(null);
   const [related, setRelated] = useState([]);
+  const playerRef = useRef(null);
 
-  const videoId = searchParams.get("v");
-  console.log(videoId);
+  const videoJsOptions = {
+    autoplay: true,
+    controls: true,
+    responsive: true,
+    fluid: true,
+    sources: [
+      {
+        src: "https://ik.imagekit.io/blogfast/modules-type.mp4?updatedAt=1777363845931",
+        type: "video/mp4",
+      },
+    ],
+  };
+
+  const handlePlayerReady = (player) => {
+    playerRef.current = player;
+
+    // You can handle player events here, for example:
+    player.on("waiting", () => {
+      console.log("player is waiting");
+    });
+
+    player.on("dispose", () => {
+      console.log("player will dispose");
+    });
+  };
+
+  // const videoId = searchParams.get("v");
+  // console.log(videoId);
 
   //    if (!video) return <p className="p-6">Loading...</p>;
 
@@ -46,8 +73,8 @@ const VideoSinglePage = () => {
       {/* LEFT SIDE */}
       <div className="lg:col-span-2 space-y-4">
         {/* VIDEO PLAYER */}
-        <div className="aspect-video bg-black rounded-xl overflow-hidden">
-          {/* <video src={video.videoUrl} controls className="w-full h-full" /> */}
+        <div className="aspect-video bg-black rounded-md overflow-hidden">
+          <VideoJS options={videoJsOptions} onReady={handlePlayerReady} />
         </div>
 
         {/* TITLE */}
